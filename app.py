@@ -97,13 +97,9 @@ class GeometryImageClassifier:
         # Find the closest matching reference geometry
         return self.find_closest_geometry(query_embedding)
 
-
-    
-# ✅ Use a strong sentence embedding model
 semantic_model = SentenceTransformer("all-MiniLM-L6-v2")
 
 def extract_text_from_docx(file_path):
-    """ ✅ Extracts normal text & tables from a .docx file for better retrieval. """
     doc = docx.Document(file_path)
     extracted_text = []
 
@@ -124,7 +120,6 @@ def extract_text_from_docx(file_path):
     return "\n".join(extracted_text)
 
 def load_documents():
-    """ ✅ Loads & processes documents, ensuring table data is properly extracted. """
     file_paths = {
         "Fastener_Types_Manual": "Fastener_Types_Manual.docx",
         "Manufacturing_Expert_Manual": "Manufacturing Expert Manual.docx"
@@ -154,7 +149,6 @@ def load_documents():
     return all_splits
 
 def create_db(splits):
-    """ ✅ Creates a FAISS vector database from document splits. """
     embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-base-en-v1.5")
     vectordb = FAISS.from_documents(splits, embeddings)
     return vectordb
@@ -230,7 +224,6 @@ def validate_query_semantically(query, retrieved_docs):
     return similarity_score >= 0.3
 
 def handle_query(query, history, retriever, qa_chain, embeddings):
-    """ ✅ Handles user queries & prevents hallucination. """
     retrieved_docs = retrieve_documents(query, retriever, embeddings)
     if not retrieved_docs or not validate_query_semantically(query, retrieved_docs):
         return history + [(query, "I couldn't find any relevant information.")], ""
@@ -244,7 +237,6 @@ def handle_query(query, history, retriever, qa_chain, embeddings):
     return history, ""
 
 def initialize_chatbot(vector_db):
-    """ ✅ Initializes chatbot with improved retrieval & processing. """
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True, output_key='answer')
     embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-base-en-v1.5")
     retriever = vector_db.as_retriever(search_kwargs={"k": 5, "search_type": "similarity"})
